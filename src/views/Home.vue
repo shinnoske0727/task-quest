@@ -54,7 +54,8 @@ export default class Home extends Vue {
 
   updateTaskList(obj: I_elmList): void {
     const index = this.elmList.findIndex(elm => elm.id === obj.id);
-    const newList = this.elmList.slice();
+    // 参照渡しはバグのもとなので、コピーして代入する
+    const newList = [...this.elmList];
     newList[index].name = obj.name;
     this.elmList = newList;
   }
