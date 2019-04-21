@@ -4,7 +4,7 @@
             .kanban
                 draggable.list(v-model="elmList")
                     template(v-for="element in elmList")
-                        task-item(:element="element" :key="element.id" @update="updateTaskList(element.id)")
+                        task-item(:element="element" :key="element.id" @update="updateTaskList")
                 button.button(@click="addTask") + さらにカードを追加
 </template>
 
@@ -52,7 +52,12 @@ export default class Home extends Vue {
     this.elmList.push(newTask);
   }
 
-  updateTaskList(id: number): void {}
+  updateTaskList(obj: I_elmList): void {
+    const index = this.elmList.findIndex(elm => elm.id === obj.id);
+    const newList = this.elmList.slice();
+    newList[index].name = obj.name;
+    this.elmList = newList;
+  }
 }
 </script>
 
