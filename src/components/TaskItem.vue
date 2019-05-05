@@ -1,6 +1,6 @@
 <template lang="pug">
     .task-item
-        input.text(v-model='taskValue' @change="updateTask")
+        input.text(type='text' v-model='taskValue' @change="updateTask")
 </template>
 
 <script lang="ts">
@@ -32,10 +32,19 @@ export default class TaskItem extends Vue {
 
 .task-item
     width: 100%
-    background-color: #fff
+    background-color: #000
     line-height: 1.5
     margin-bottom: 0.5em
     padding: 0 10px;
     box-sizing: border-box
     border-radius: $radius
+
+input[type="text"] {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    background-color: #000;
+    color #fff
+}
 </style>

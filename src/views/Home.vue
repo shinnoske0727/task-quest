@@ -1,11 +1,19 @@
 <template lang="pug">
     .home
         .wrapper
-            .kanban
-                draggable.list(v-model="elmList")
-                    template(v-for="element in elmList")
-                        task-item(:element="element" :key="element.id" @update="updateTaskList")
-                button.button(@click="addTask") + さらにカードを追加
+            .group
+                p.goal
+                    | {{topTask.name}}と
+                    br
+                    | しぬゾンビ
+                .monster
+                    img(src="@/assets/img/monster_pic_1.png")
+                .kanban
+                    .kanban-title 案件A
+                    draggable.list(v-model="elmList")
+                        template(v-for="element in elmList")
+                            task-item(:element="element" :key="element.id" @update="updateTaskList")
+                    button.button(@click="addTask") + さらにカードを追加
 </template>
 
 <script lang="ts">
@@ -24,29 +32,23 @@ export default class Home extends Vue {
   elmList = [
     {
       id: 1,
-      name: "task1",
+      name: "メールをおくる",
       isFinished: false
     },
-    {
-      id: 2,
-      name: "task1",
-      isFinished: false
-    },
-    {
-      id: 3,
-      name: "task1",
-      isFinished: false
-    }
   ];
 
+  get topTask():I_elmList {
+      return this.elmList[0]
+  }
+
   addTask(): void {
-    const lastId = Array.from(this.elmList.keys()).reduce(
+    const lastId = this.elmList.map(elm => elm.id).reduce(
       (p, c) => Math.max(c, p),
-      0
+      1
     );
     const newTask: I_elmList = {
       id: lastId + 1,
-      name: String(Date.now()),
+      name: '',
       isFinished: false
     };
     this.elmList.push(newTask);
@@ -74,13 +76,30 @@ export default class Home extends Vue {
 .kanban
     width: $width
     padding: 10px
-    background-color: red
-    border-radius: $radius
     box-sizing: border-box
+    background-color: #444;
+    border-radius: 4px;
 
+.kanban-title
+    color white
+    margin-bottom: 5px
+
+.goal
+    margin-bottom: 20px;
+    padding: 10px 0;
+    text-align: center
+    color #fff
+    font-size: 32px;
+    border: 2px solid white
+    border-radius: 4px;
+.monster
+    margin-bottom: 20px;
+    height: 300px;
+    text-align: center
+    > img
+        height: 100%
 .button
     display: block
-    background-color: blue
     height: 1.5em
     color: #fff
     padding: 0 10px;
