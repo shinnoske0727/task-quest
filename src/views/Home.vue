@@ -1,108 +1,57 @@
 <template lang="pug">
     .home
+        header.header
         .wrapper
-            .group
-                p.goal
-                    | {{topTask.name}}と
-                    br
-                    | しぬゾンビ
-                .monster
-                    img(src="@/assets/img/monster_pic_1.png")
-                .kanban
-                    .kanban-title 案件A
-                    draggable.list(v-model="elmList")
-                        template(v-for="element in elmList")
-                            task-item(:element="element" :key="element.id" @update="updateTaskList")
-                    button.button(@click="addTask") + さらにカードを追加
+            task-group(:title="'案件A'" :pic="require('@/assets/img/monster_pic_1.png')")
+            task-group(:title="'案件B'" :pic="require('@/assets/img/monster_pic_2.png')")
+            task-group(:title="'案件C'" :pic="require('@/assets/img/monster_pic_3.png')")
+            task-group(:title="'案件D'" :pic="require('@/assets/img/monster_pic_4.png')")
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import draggable from "vuedraggable";
-import { I_elmList } from "@/types";
-import TaskItem from "@/components/TaskItem.vue";
+import TaskGroup from "@/components/TaskGroup.vue";
 
 @Component({
   components: {
-    draggable,
-    TaskItem
+    TaskGroup,
   }
 })
 export default class Home extends Vue {
-  elmList = [
-    {
-      id: 1,
-      name: "メールをおくる",
-      isFinished: false
-    },
-  ];
-
-  get topTask():I_elmList {
-      return this.elmList[0]
-  }
-
-  addTask(): void {
-    const lastId = this.elmList.map(elm => elm.id).reduce(
-      (p, c) => Math.max(c, p),
-      1
-    );
-    const newTask: I_elmList = {
-      id: lastId + 1,
-      name: '',
-      isFinished: false
-    };
-    this.elmList.push(newTask);
-  }
-
-  updateTaskList(obj: I_elmList): void {
-    const index = this.elmList.findIndex(elm => elm.id === obj.id);
-    // 参照渡しはバグのもとなので、コピーして代入する
-    const newList = [...this.elmList];
-    newList[index].name = obj.name;
-    this.elmList = newList;
-  }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import "../assets/stylus/base.styl"
 
+.home
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    white-space nowrap
+    display: flex
+    flex-direction: column
+    justify-content: flex-start
+    align-items: flex-start
+
+.header
+    position: fixed
+    width: 100%
+    height: 100px
+    background-color: #fff
+
 .wrapper
+    margin-top: 100px
+    flex: 1
     display grid
     grid-template-columns repeat(auto-fit, $width)
+    grid-auto-flow column
     grid-template-rows auto
     grid-gap $gap
-
-.kanban
-    width: $width
-    padding: 10px
+    justify-content: flex-start
     box-sizing: border-box
-    background-color: #444;
-    border-radius: 4px;
+    padding: 0 30px
 
-.kanban-title
-    color white
-    margin-bottom: 5px
-
-.goal
-    margin-bottom: 20px;
-    padding: 10px 0;
-    text-align: center
-    color #fff
-    font-size: 32px;
-    border: 2px solid white
-    border-radius: 4px;
-.monster
-    margin-bottom: 20px;
-    height: 300px;
-    text-align: center
-    > img
-        height: 100%
-.button
-    display: block
-    height: 1.5em
-    color: #fff
-    padding: 0 10px;
-    box-sizing: border-box
-    border-radius: $radius
 </style>

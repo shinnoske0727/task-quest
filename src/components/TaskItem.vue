@@ -1,6 +1,8 @@
 <template lang="pug">
     .task-item
-        input.text(type='text' v-model='taskValue' @change="updateTask")
+        .check(:data-is-checked="taskStatus" @click="toggleTaskStatus")
+            img(src="@/assets/img/common/icn_check.png")
+        input.text(type='text' v-model='taskValue' @change="updateTask" :data-is-checked="taskStatus")
 </template>
 
 <script lang="ts">
@@ -15,14 +17,20 @@ export default class TaskItem extends Vue {
   readonly element!: I_elmList;
 
   taskValue = this.element.name;
+  taskStatus = this.element.isFinished;
 
   updateTask(): void {
     const obj: I_elmList = {
       id: this.element.id,
       name: this.taskValue,
-      isFinished: this.element.isFinished
+      isFinished: this.taskStatus
     };
     this.$emit("update", obj);
+  }
+
+  toggleTaskStatus(): void {
+    this.taskStatus = !this.taskStatus;
+    this.updateTask();
   }
 }
 </script>
@@ -31,20 +39,32 @@ export default class TaskItem extends Vue {
 @import "../assets/stylus/base.styl"
 
 .task-item
+    display: flex
     width: 100%
-    background-color: #000
-    line-height: 1.5
     margin-bottom: 0.5em
-    padding: 0 10px;
-    box-sizing: border-box
-    border-radius: $radius
 
-input[type="text"] {
-    padding: 0;
+input[type="text"]
+    flex 1
+    width: 100%
+    line-height: 1.5
+    padding: 0 10px;
     border: none;
-    border-radius: 0;
+    border-radius: $radius
     outline: none;
     background-color: #000;
+    box-sizing: border-box
     color #fff
-}
+    &[data-is-checked='true']
+        pointer-events none
+        color #666
+
+.check
+    width: 24px
+    height: 24px
+    cursor: pointer
+    img
+        width: 100%
+        height: 100%
+    &[data-is-checked='true']
+        filter grayscale(1)
 </style>
