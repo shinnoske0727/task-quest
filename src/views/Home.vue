@@ -11,6 +11,22 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import TaskGroup from "@/components/TaskGroup.vue";
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+const firebaseConfig = {
+apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
+authDomain: "task-quest-31d58.firebaseapp.com",
+databaseURL: "https://task-quest-31d58.firebaseio.com",
+projectId: "task-quest-31d58",
+storageBucket: "task-quest-31d58.appspot.com",
+messagingSenderId: "872983845084",
+appId: "1:872983845084:web:5f03a422d3bf2a79"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+console.log(db)
 
 @Component({
   components: {
@@ -18,6 +34,15 @@ import TaskGroup from "@/components/TaskGroup.vue";
   }
 })
 export default class Home extends Vue {
+    data:any = null;
+    created() {
+        db.collection("users").get().then((querySnapshot:any) => {
+            querySnapshot.forEach((doc:any) => {
+                console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+                this.data = doc.data()
+            });
+        });
+    }
 }
 </script>
 
