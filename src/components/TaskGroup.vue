@@ -13,7 +13,7 @@
             img(:src="pic")
         .kanban
             .title {{title}}
-            draggable.list(v-model="elmList")
+            draggable.list
                 template(v-for="element in elmList")
                     task-item(:element="element" :key="element.id" @update="updateTaskList")
             button.button(@click="addTask") + さらにカードを追加
@@ -41,19 +41,22 @@ export default class TaskGroup extends Vue {
     default: ""
   })
   readonly pic!: string;
-  elmList = [
-    {
-      id: 1,
-      name: "メールをおくる",
-      isFinished: false
-    }
-  ];
+  @Prop({
+    default: []
+  })
+  readonly elmList: I_elmList[] | undefined;
+  @Prop({
+    default: null
+  })
+  readonly index!: number | null;
 
-  get topTask(): I_elmList {
+  get topTask(): I_elmList | null {
+    if (!(this.elmList && this.elmList.length)) return null;
     return this.elmList.filter(elm => !elm.isFinished)[0];
   }
 
   addTask(): void {
+    if (!(this.elmList && this.elmList.length)) return;
     const lastId = this.elmList
       .map(elm => elm.id)
       .reduce((p, c) => Math.max(c, p), 1);
@@ -63,14 +66,20 @@ export default class TaskGroup extends Vue {
       isFinished: false
     };
     this.elmList.push(newTask);
+    this.$emit("addTask", this.index, this.elmList);
   }
 
   updateTaskList(obj: I_elmList): void {
+    console.log(obj);
+    if (!(this.elmList && this.elmList.length)) return;
     const index = this.elmList.findIndex(elm => elm.id === obj.id);
     // 参照渡しはバグのもとなので、コピーして代入する
+    console.log(index);
     const newList = [...this.elmList];
+    console.log(newList);
     newList[index] = obj;
-    this.elmList = newList;
+    console.log(newList);
+    this.$emit("editTask", this.index, newList);
   }
 }
 </script>
