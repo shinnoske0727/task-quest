@@ -2,47 +2,138 @@
     .home
         header.header
         .wrapper
-            task-group(:title="'案件A'" :pic="require('@/assets/img/monster_pic_1.png')")
-            task-group(:title="'案件B'" :pic="require('@/assets/img/monster_pic_2.png')")
-            task-group(:title="'案件C'" :pic="require('@/assets/img/monster_pic_3.png')")
-            task-group(:title="'案件D'" :pic="require('@/assets/img/monster_pic_4.png')")
+            template(v-for='(project, index) in projects')
+                task-group(:title="project.title" :pic="monsterList[index]" :elm-list="project.tasks"
+                :index="index"
+                @addTask="updateTasks"
+                @editTask="updateTasks"
+                )
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import TaskGroup from "@/components/TaskGroup.vue";
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
+import * as firebase from "firebase/app";
+import "firebase/firestore";
+import { I_UserData, I_Project, I_Task } from "../types";
 const firebaseConfig = {
-apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
-authDomain: "task-quest-31d58.firebaseapp.com",
-databaseURL: "https://task-quest-31d58.firebaseio.com",
-projectId: "task-quest-31d58",
-storageBucket: "task-quest-31d58.appspot.com",
-messagingSenderId: "872983845084",
-appId: "1:872983845084:web:5f03a422d3bf2a79"
+  apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
+  authDomain: "task-quest-31d58.firebaseapp.com",
+  databaseURL: "https://task-quest-31d58.firebaseio.com",
+  projectId: "task-quest-31d58",
+  storageBucket: "task-quest-31d58.appspot.com",
+  messagingSenderId: "872983845084",
+  appId: "1:872983845084:web:5f03a422d3bf2a79"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+const hoge: I_UserData = {
+  user: "tadao",
+  projects: [
+    {
+      id: 1,
+      name: "案件1",
+      tasks: [
+        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
+      ]
+    },
+    {
+      id: 2,
+      name: "案件2",
+      tasks: [
+        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
+      ]
+    },
+    {
+      id: 3,
+      name: "案件3",
+      tasks: [
+        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
+      ]
+    },
+    {
+      id: 4,
+      name: "案件4",
+      tasks: [
+        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
+      ]
+    }
+  ]
+};
 const db = firebase.firestore();
-console.log(db)
 
 @Component({
   components: {
-    TaskGroup,
+    TaskGroup
   }
 })
 export default class Home extends Vue {
-    data:any = null;
-    created() {
-        db.collection("users").get().then((querySnapshot:any) => {
-            querySnapshot.forEach((doc:any) => {
-                console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-                this.data = doc.data()
-            });
-        });
+  userData: I_UserData | null = null;
+  monsterList = [
+    require("@/assets/img/monster_pic_1.png"),
+    require("@/assets/img/monster_pic_2.png"),
+    require("@/assets/img/monster_pic_3.png"),
+    require("@/assets/img/monster_pic_4.png")
+  ];
+  elmList = [
+    {
+      id: 1,
+      name: "メールをおくる",
+      isFinished: false
     }
+  ];
+
+  get projects(): I_Project[] {
+    return this.userData ? this.userData.projects : [];
+  }
+
+  updateTasks(index: number, tasks: I_Task[]): void {
+    this.projects[index].tasks = tasks;
+    const ref = db.collection("users").doc("rYbc6Hk1NiCiUFFelmRe");
+    ref
+      .update({
+        projects: this.projects
+      })
+      .then(() => {
+        console.log("success");
+      })
+      .catch(e => {
+        throw new Error(e);
+      });
+  }
+
+  logger(a: any, b: any): void {
+    console.log(a, b);
+  }
+
+  async fetchData() {
+    await db
+      .collection("users")
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+          this.userData = doc.data() as I_UserData;
+        });
+      });
+
+    if (this.projects.length) return;
+
+    const ref = db.collection("users").doc("rYbc6Hk1NiCiUFFelmRe");
+    await ref
+      .set(hoge)
+      .then(() => {
+        console.log("success");
+      })
+      .catch(e => {
+        throw new Error(e);
+      });
+  }
+
+  created() {
+    this.fetchData();
+  }
 }
 </script>
 
@@ -78,5 +169,4 @@ export default class Home extends Vue {
     justify-content: flex-start
     box-sizing: border-box
     padding: 0 30px
-
 </style>
