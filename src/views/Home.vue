@@ -16,6 +16,7 @@ import TaskGroup from "@/components/TaskGroup.vue";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { I_UserData, I_Project, I_Task } from "../types";
+import { DocumentReference } from "@firebase/firestore-types";
 const firebaseConfig = {
   apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
   authDomain: "task-quest-31d58.firebaseapp.com",
@@ -29,7 +30,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const hoge: I_UserData = {
-  user: "tadao",
+  user: "anonymous",
   projects: [
     {
       id: 1,
@@ -89,8 +90,10 @@ export default class Home extends Vue {
   }
 
   updateTasks(index: number, tasks: I_Task[]): void {
+    const id = localStorage.getItem("taskQuestId");
+    if (!id) return;
     this.projects[index].tasks = tasks;
-    const ref = db.collection("users").doc("rYbc6Hk1NiCiUFFelmRe");
+    const ref = db.collection("users").doc(id);
     ref
       .update({
         projects: this.projects
@@ -103,32 +106,33 @@ export default class Home extends Vue {
       });
   }
 
-  logger(a: any, b: any): void {
-    console.log(a, b);
-  }
-
   async fetchData() {
-    await db
-      .collection("users")
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-          this.userData = doc.data() as I_UserData;
+    const id = localStorage.getItem("taskQuestId");
+    if (id) {
+      // 既存のものを取得
+      await db
+        .collection("users")
+        .doc(id)
+        .get()
+        .then(docSnapshot => {
+          if (docSnapshot) {
+            this.userData = docSnapshot.data() as I_UserData;
+          } else {
+            throw new Error("Don't exist data");
+          }
         });
-      });
-
-    if (this.projects.length) return;
-
-    const ref = db.collection("users").doc("rYbc6Hk1NiCiUFFelmRe");
-    await ref
-      .set(hoge)
-      .then(() => {
-        console.log("success");
-      })
-      .catch(e => {
-        throw new Error(e);
-      });
+    } else {
+      // 新しく生成
+      const ref = db.collection("users");
+      await ref
+        .add(hoge)
+        .then((docRef: DocumentReference) => {
+          localStorage.setItem("taskQuestId", docRef.id);
+        })
+        .catch(e => {
+          throw new Error(e);
+        });
+    }
   }
 
   created() {
