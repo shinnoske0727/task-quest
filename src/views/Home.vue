@@ -5,6 +5,7 @@
                 task-group(
                     :index="index"
                     :project="project"
+                    :db="db"
                     @addTask="updateProjects"
                     @updateTask="updateProjects"
                 )
@@ -15,7 +16,13 @@ import { Component, Vue } from "vue-property-decorator";
 import TaskGroup from "@/components/TaskGroup.vue";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-import {I_UserData, I_Project, I_Task, I_Monster, UpdateOption} from "../types";
+import {
+  I_UserData,
+  I_Project,
+  I_Task,
+  I_Monster,
+  UpdateOption
+} from "../types";
 import { DocumentReference } from "@firebase/firestore-types";
 import { sortBy } from "lodash";
 import { INITIAL_DATA } from "@/assets/data";
@@ -32,7 +39,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
-
 
 @Component({
   components: {
@@ -51,6 +57,10 @@ export default class Home extends Vue {
 
   get projects(): I_Project[] {
     return this.userData ? this.userData.projects : [];
+  }
+
+  get db() {
+    return db;
   }
 
   updateProjects(option: UpdateOption): void {

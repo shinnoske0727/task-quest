@@ -24,6 +24,8 @@ import draggable from "vuedraggable";
 import { I_elmList, I_Monster, I_Project, UpdateOption } from "@/types";
 import TaskItem from "@/components/TaskItem.vue";
 import Monster from "@/components/Monster.vue";
+import { sample } from "lodash";
+import wait from "@/assets/utils/wait";
 
 @Component({
   components: {
@@ -43,6 +45,11 @@ export default class TaskGroup extends Vue {
     default: null
   })
   readonly index!: number;
+
+  @Prop({
+    default: null
+  })
+  readonly db!: firebase.firestore.Firestore;
 
   get topTask(): I_elmList | null {
     if (!(this.tasks && this.tasks.length)) return null;
@@ -87,10 +94,20 @@ export default class TaskGroup extends Vue {
     this.$emit("updateTask", option);
   }
 
-  updateMonster(): void {
+  async updateMonster(): Promise<void> {
     if (!this.monster) return;
-    const monster: I_Monster = { ...this.monster };
+    let monster: I_Monster | undefined = { ...this.monster };
     monster.remaining -= 1;
+    if (monster.remaining <= 0) {
+      await wait(500);
+      const monsterRef = this.db.collection("monsters");
+      const monsters = await monsterRef
+        .get()
+        .then(querySnapshot =>
+          querySnapshot.docs.map(elem => elem.data() as I_Monster)
+        );
+      monster = sample(monsters);
+    }
     const option: UpdateOption = {
       index: this.index,
       monster: monster
