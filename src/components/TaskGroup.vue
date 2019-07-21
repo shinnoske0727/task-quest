@@ -12,7 +12,7 @@
         .kanban
             .title {{ project.title }}
             draggable.list
-                template(v-for="task in tasks")
+                template(v-for="task in activeTasks")
                     task-item(:element="task" :key="task.id" @update="updateTaskList" @finishTask="finishTask")
             button.button(@click="addTask") + さらにカードを追加
 
@@ -58,6 +58,10 @@ export default class TaskGroup extends Vue {
   get tasks(): I_elmList[] | null {
     if (!this.project) return null;
     return this.project.tasks;
+  }
+  get activeTasks(): I_elmList[] | null {
+    if (!this.tasks) return null;
+    return this.tasks.filter(task => !task.isFinished);
   }
   get monster(): I_Monster | null {
     return this.project && this.project.monster ? this.project.monster : null;
