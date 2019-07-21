@@ -76,10 +76,7 @@ export default class Monster extends Vue {
         "+=0.1"
       )
       .set(this.$refs.effect, {
-        autoAlpha: 0,
-        onComplete: () => {
-          console.log("アニメーション終了");
-        }
+        autoAlpha: 0
       });
   }
 
