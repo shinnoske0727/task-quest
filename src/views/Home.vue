@@ -11,6 +11,7 @@
                     @addTask="updateProjects"
                     @updateTask="updateProjects"
                 )
+        task-footer(:all-repel="0" :repel-per-date="0")
 </template>
 
 <script lang="ts">
@@ -28,6 +29,7 @@ import {
 import { DocumentReference } from "@firebase/firestore-types";
 import { sortBy } from "lodash";
 import { INITIAL_DATA } from "@/assets/data";
+import TaskFooter from "@/components/TaskFooter.vue";
 const firebaseConfig = {
   apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
   authDomain: "task-quest-31d58.firebaseapp.com",
@@ -44,7 +46,8 @@ const db = firebase.firestore();
 
 @Component({
   components: {
-    TaskGroup
+    TaskGroup,
+    TaskFooter
   }
 })
 export default class Home extends Vue {
