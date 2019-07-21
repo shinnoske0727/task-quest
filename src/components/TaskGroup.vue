@@ -4,7 +4,8 @@
             template(v-if="topTask && topTask.name")
                 | {{topTask.name}}と
                 br
-                | しぬゾンビ
+                | しぬ
+                | {{monster}}
             template(v-else)
                 | タスクを追加して
                 br
@@ -49,6 +50,10 @@ export default class TaskGroup extends Vue {
     default: null
   })
   readonly index!: number | null;
+  @Prop({
+    default: ""
+  })
+  readonly monster!: string;
 
   get topTask(): I_elmList | null {
     if (!(this.elmList && this.elmList.length)) return null;
@@ -104,6 +109,7 @@ export default class TaskGroup extends Vue {
     font-size: 32px;
     border: 2px solid white
     border-radius: 4px;
+    white-space pre-wrap
 .monster
     margin-bottom: 20px;
     height: 300px;

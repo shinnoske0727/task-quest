@@ -14,6 +14,7 @@ export interface I_Project {
   id: number;
   name: string;
   tasks: I_Task[];
+  monster?: string;
 }
 
 export interface I_UserData {
