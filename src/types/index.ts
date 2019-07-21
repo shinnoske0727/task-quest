@@ -13,6 +13,8 @@ export interface I_Task {
 export interface I_Monster {
   name: string;
   hitPoint: number;
+  id: number;
+  remaining: number;
 }
 
 export interface I_Project {

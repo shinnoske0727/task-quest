@@ -1,14 +1,13 @@
 <template lang="pug">
     .task-group
+        p.name {{ monster.name }}
+        .hit-point
+            .hit-point-item(v-for="n in monster.hitPoint" :key="n" :data-index="n" :data-active="n <= monster.remaining")
         p.goal
             template(v-if="topTask && topTask.name")
-                | 「{{topTask.name}}」
-                | と死ぬ{{monster.name}}
+                | 弱点 : {{topTask.name}}
             template(v-else)
-                | タスクを追加して
-                br
-                | 敵を倒そう
-        p.hit-point {{ monster.hitPoint }}
+                | 弱点 : タスクを追加して敵を倒そう
         monster(:pic="pic" :finish-count="finishCount")
         .kanban
             .title {{title}}
@@ -22,7 +21,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import draggable from "vuedraggable";
-import { I_elmList } from "@/types";
+import { I_elmList, I_Monster } from "@/types";
 import TaskItem from "@/components/TaskItem.vue";
 import Monster from "@/components/Monster.vue";
 
@@ -52,9 +51,9 @@ export default class TaskGroup extends Vue {
   })
   readonly index!: number | null;
   @Prop({
-    default: ""
+    default: null
   })
-  readonly monster!: string;
+  readonly monster!: I_Monster | null;
 
   get topTask(): I_elmList | null {
     if (!(this.elmList && this.elmList.length)) return null;
@@ -96,6 +95,9 @@ export default class TaskGroup extends Vue {
 </script>
 
 <style scoped lang="stylus">
+.task-group
+    width: 300px
+
 .kanban
     width: $width
     padding: 10px
@@ -107,14 +109,43 @@ export default class TaskGroup extends Vue {
     color white
     margin-bottom: 5px
 
+.name
+    padding: 10px 0;
+    text-align: center
+    color #fff
+    font-size: 24px;
+    font-weight: bold
+
+.hit-point
+    width: 100%
+    display: flex
+    height: 20px
+    margin: 10px 0;
+    border: 1px solid #fff;
+    box-sizing border-box
+    text-align: center
+    color #fff
+    font-size: 20px;
+    font-weight: bold
+
+.hit-point-item
+    flex: 1;
+    background-color: black;
+    border-right: 1px solid #fff;
+    &:last-of-type
+        border-right: none;
+    &[data-active="true"]
+        background-color: #008a70;
+
+
 .goal
+    height: 3em
     margin-bottom: 20px;
     padding: 10px 0;
     text-align: center
     color #fff
-    font-size: 32px;
-    border: 2px solid white
-    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold
     white-space pre-wrap
 
 .button

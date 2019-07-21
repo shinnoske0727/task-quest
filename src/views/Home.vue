@@ -1,6 +1,5 @@
 <template lang="pug">
     .home
-        header.header
         .wrapper
             template(v-for='(project, index) in projects')
                 task-group(
@@ -144,11 +143,6 @@ export default class Home extends Vue {
     justify-content: flex-start
     align-items: flex-start
 
-.header
-    position: fixed
-    width: 100%
-    height: 100px
-    background-color: #fff
 
 .wrapper
     margin-top: 100px
