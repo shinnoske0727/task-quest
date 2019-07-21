@@ -31,6 +31,9 @@ export default class TaskItem extends Vue {
   toggleTaskStatus(): void {
     this.taskStatus = !this.taskStatus;
     this.updateTask();
+    if (this.taskStatus) {
+      this.$emit("finishTask");
+    }
   }
 }
 </script>

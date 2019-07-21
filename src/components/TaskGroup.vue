@@ -4,18 +4,18 @@
             template(v-if="topTask && topTask.name")
                 | {{topTask.name}}と
                 br
-                | しぬゾンビ
+                | しぬ
+                | {{monster}}
             template(v-else)
                 | タスクを追加して
                 br
                 | 敵を倒そう
-        .monster
-            img(:src="pic")
+        monster(:pic="pic" :finish-count="finishCount")
         .kanban
             .title {{title}}
             draggable.list
                 template(v-for="element in elmList")
-                    task-item(:element="element" :key="element.id" @update="updateTaskList")
+                    task-item(:element="element" :key="element.id" @update="updateTaskList" @finishTask="finishTask")
             button.button(@click="addTask") + さらにカードを追加
 
 </template>
@@ -25,14 +25,17 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 import draggable from "vuedraggable";
 import { I_elmList } from "@/types";
 import TaskItem from "@/components/TaskItem.vue";
+import Monster from "@/components/Monster.vue";
 
 @Component({
   components: {
     draggable,
-    TaskItem
+    TaskItem,
+    Monster
   }
 })
 export default class TaskGroup extends Vue {
+  finishCount = 0;
   @Prop({
     default: ""
   })
@@ -49,6 +52,10 @@ export default class TaskGroup extends Vue {
     default: null
   })
   readonly index!: number | null;
+  @Prop({
+    default: ""
+  })
+  readonly monster!: string;
 
   get topTask(): I_elmList | null {
     if (!(this.elmList && this.elmList.length)) return null;
@@ -81,6 +88,11 @@ export default class TaskGroup extends Vue {
     console.log(newList);
     this.$emit("editTask", this.index, newList);
   }
+
+  finishTask(): void {
+    console.log("タスクが終わったよ");
+    this.finishCount++;
+  }
 }
 </script>
 
@@ -104,14 +116,8 @@ export default class TaskGroup extends Vue {
     font-size: 32px;
     border: 2px solid white
     border-radius: 4px;
-.monster
-    margin-bottom: 20px;
-    height: 300px;
-    text-align: center
-    > img
-        width: 100%
-        height: 100%
-        object-fit contain
+    white-space pre-wrap
+
 .button
     display: block
     height: 1.5em

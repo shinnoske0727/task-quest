@@ -2,11 +2,15 @@
     .home
         header.header
         .wrapper
-            template(v-for='(project, index) in projects')
-                task-group(:title="project.title" :pic="monsterList[index]" :elm-list="project.tasks"
-                :index="index"
-                @addTask="updateTasks"
-                @editTask="updateTasks"
+            template(v-for='(project, index) in mergedProjects')
+                task-group(
+                    :title="project.title"
+                    :pic="monsterList[index]"
+                    :elm-list="project.tasks"
+                    :monster="project.monster"
+                    :index="index"
+                    @addTask="updateTasks"
+                    @editTask="updateTasks"
                 )
 </template>
 
@@ -87,6 +91,21 @@ export default class Home extends Vue {
 
   get projects(): I_Project[] {
     return this.userData ? this.userData.projects : [];
+  }
+
+  get mergedProjects(): I_Project[] {
+    const monsters = ["ゾンビ", "ゴーレム", "ドラゴン", "ナイト"];
+
+    if (this.userData) {
+      const fixedProject = this.userData.projects.map((project, index) => {
+        const number = index % monsters.length;
+        project.monster = monsters[number];
+        return project;
+      });
+      return fixedProject;
+    } else {
+      return [];
+    }
   }
 
   updateTasks(index: number, tasks: I_Task[]): void {
