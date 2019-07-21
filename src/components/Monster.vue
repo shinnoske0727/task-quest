@@ -3,7 +3,7 @@
         .monster
             img(:src="pic" v-if="pic" ref="monster")
 
-        .effect(v-if="finishCount")
+        .effect
             img(src="@/assets/img/zangeki.png" ref="effect")
 </template>
 
@@ -34,17 +34,16 @@ export default class Monster extends Vue {
   /* mounted */
   /////////////
   mounted(): void {
-    // this.setupTimeline();
+    this.setupTimeline();
   }
 
   /////////////
   /* methods */
   /////////////
   setupTimeline(): void {
-    setTimeout(() => {
-      if (!(this.$refs.monster && this.$refs.effect)) return;
-      const timeline = new TimelineMax();
-      timeline
+    this.$nextTick(() => {
+      this.timeline = new TimelineMax();
+      this.timeline
         .set(this.$refs.effect, {
           autoAlpha: 1.0
         })
@@ -83,14 +82,12 @@ export default class Monster extends Vue {
           },
           "+=0.1"
         );
-
-      timeline.play();
-    }, 200);
+      this.timeline.pause();
+    });
   }
 
   playTimeline(): void {
-    // todo なぜかrestartがうまくいかないので
-    this.setupTimeline();
+    if (this.timeline) this.timeline.restart();
   }
   ///////////
   /* watch */
@@ -121,4 +118,5 @@ export default class Monster extends Vue {
     height: 300px
     & > img
         width: 100%
+        opacity 0
 </style>
