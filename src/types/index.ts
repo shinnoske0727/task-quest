@@ -10,11 +10,16 @@ export interface I_Task {
   isFinished: boolean;
 }
 
+export interface I_Monster {
+  name: string;
+  hitPoint: number;
+}
+
 export interface I_Project {
   id: number;
   name: string;
   tasks: I_Task[];
-  monster?: string;
+  monster?: I_Monster;
 }
 
 export interface I_UserData {
