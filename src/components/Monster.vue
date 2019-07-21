@@ -104,7 +104,7 @@ export default class Monster extends Vue {
     position: relative
 .monster
     margin-bottom: 20px;
-    height: 300px;
+    height: 200px;
     text-align: center
     > img
         width: 100%
@@ -115,8 +115,10 @@ export default class Monster extends Vue {
     top: 0
     left: 0
     width: 300px
-    height: 300px
+    height: 200px
+    pointer-events none
+    text-align: center
     & > img
-        width: 100%
+        height: 100%;
         opacity 0
 </style>

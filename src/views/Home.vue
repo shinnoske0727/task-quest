@@ -1,5 +1,7 @@
 <template lang="pug">
     .home
+        h1.title
+            img(src="@/assets/img/title.png" alt="TASK QUEST")
         .wrapper
             template(v-for='(project, index) in projects')
                 task-group(
@@ -155,16 +157,18 @@ export default class Home extends Vue {
     left: 0
     width: 100%
     height: 100%
-    white-space nowrap
-    display: flex
-    flex-direction: column
-    justify-content: flex-start
-    align-items: flex-start
 
+.title
+    position: absolute
+    top: 10px
+    left: 50%;
+    width: 500px
+    transform: translateX(-50%)
+    & > img
+        width: 100%
 
 .wrapper
-    margin-top: 100px
-    flex: 1
+    margin-top: 125px
     display grid
     grid-template-columns repeat(auto-fit, $width)
     grid-auto-flow column
