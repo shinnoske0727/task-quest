@@ -3,13 +3,11 @@
         .wrapper
             template(v-for='(project, index) in projects')
                 task-group(
-                    :title="project.title"
                     :pic="monsterList[index]"
-                    :elm-list="project.tasks"
-                    :monster="project.monster"
                     :index="index"
-                    @addTask="updateTasks"
-                    @editTask="updateTasks"
+                    :project="project"
+                    @addTask="updateProjects"
+                    @updateTask="updateProjects"
                 )
 </template>
 
@@ -18,7 +16,7 @@ import { Component, Vue } from "vue-property-decorator";
 import TaskGroup from "@/components/TaskGroup.vue";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-import { I_UserData, I_Project, I_Task, I_Monster } from "../types";
+import {I_UserData, I_Project, I_Task, I_Monster, UpdateOption} from "../types";
 import { DocumentReference } from "@firebase/firestore-types";
 import { sortBy } from "lodash";
 import { INITIAL_DATA } from "@/assets/data";
@@ -35,6 +33,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
+
 
 @Component({
   components: {
@@ -61,10 +60,27 @@ export default class Home extends Vue {
     return this.userData ? this.userData.projects : [];
   }
 
-  updateTasks(index: number, tasks: I_Task[]): void {
+  updateProjects(option: UpdateOption): void {
     const id = localStorage.getItem("taskQuestId");
     if (!id) return;
+    if (option.tasks && option.tasks.length) {
+      this.updateTasks(option.index, option.tasks);
+    }
+    if (option.monster) {
+      this.updateMonster(option.index, option.monster);
+    }
+    this.update(id);
+  }
+
+  updateTasks(index: number, tasks: I_Task[]): void {
     this.projects[index].tasks = tasks;
+  }
+
+  updateMonster(index: number, monster: I_Monster): void {
+    this.projects[index].monster = monster;
+  }
+
+  update(id: string): void {
     const ref = db.collection("users").doc(id);
     ref
       .update({
@@ -108,7 +124,6 @@ export default class Home extends Vue {
         project.monster = sortedMonsters[index];
         return project;
       });
-      console.log(initialData);
       const userRef = db.collection("users");
       await userRef
         .add(INITIAL_DATA)

@@ -28,3 +28,9 @@ export interface I_UserData {
   user: string;
   projects: I_Project[];
 }
+
+export type UpdateOption = {
+  index: number;
+  tasks?: I_Task[];
+  monster?: I_Monster;
+};

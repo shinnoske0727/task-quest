@@ -10,10 +10,10 @@
                 | 弱点 : タスクを追加して敵を倒そう
         monster(:pic="pic" :finish-count="finishCount")
         .kanban
-            .title {{title}}
+            .title {{ project.title }}
             draggable.list
-                template(v-for="element in elmList")
-                    task-item(:element="element" :key="element.id" @update="updateTaskList" @finishTask="finishTask")
+                template(v-for="task in tasks")
+                    task-item(:element="task" :key="task.id" @update="updateTaskList" @finishTask="finishTask")
             button.button(@click="addTask") + さらにカードを追加
 
 </template>
@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import draggable from "vuedraggable";
-import { I_elmList, I_Monster } from "@/types";
+import { I_elmList, I_Monster, I_Project, UpdateOption } from "@/types";
 import TaskItem from "@/components/TaskItem.vue";
 import Monster from "@/components/Monster.vue";
 
@@ -35,60 +35,76 @@ import Monster from "@/components/Monster.vue";
 export default class TaskGroup extends Vue {
   finishCount = 0;
   @Prop({
-    default: ""
+    default: null
   })
-  readonly title!: string;
+  readonly project!: I_Project | null;
+
   @Prop({
     default: ""
   })
   readonly pic!: string;
-  @Prop({
-    default: []
-  })
-  readonly elmList: I_elmList[] | undefined;
+
   @Prop({
     default: null
   })
-  readonly index!: number | null;
-  @Prop({
-    default: null
-  })
-  readonly monster!: I_Monster | null;
+  readonly index!: number;
 
   get topTask(): I_elmList | null {
-    if (!(this.elmList && this.elmList.length)) return null;
-    return this.elmList.filter(elm => !elm.isFinished)[0];
+    if (!(this.tasks && this.tasks.length)) return null;
+    return this.tasks.filter(task => !task.isFinished)[0];
+  }
+  get tasks(): I_elmList[] | null {
+    if (!this.project) return null;
+    return this.project.tasks;
+  }
+  get monster(): I_Monster | null {
+    return this.project && this.project.monster ? this.project.monster : null;
   }
 
   addTask(): void {
-    if (!(this.elmList && this.elmList.length)) return;
-    const lastId = this.elmList
-      .map(elm => elm.id)
+    if (!(this.tasks && this.tasks.length)) return;
+    const lastId = this.tasks
+      .map(task => task.id)
       .reduce((p, c) => Math.max(c, p), 1);
     const newTask: I_elmList = {
       id: lastId + 1,
       name: "",
       isFinished: false
     };
-    this.elmList.push(newTask);
-    this.$emit("addTask", this.index, this.elmList);
+    this.tasks.push(newTask);
+    const option: UpdateOption = {
+      index: this.index,
+      tasks: this.tasks
+    };
+    this.$emit("addTask", option);
   }
 
   updateTaskList(obj: I_elmList): void {
-    console.log(obj);
-    if (!(this.elmList && this.elmList.length)) return;
-    const index = this.elmList.findIndex(elm => elm.id === obj.id);
+    if (!(this.tasks && this.tasks.length)) return;
+    const index = this.tasks.findIndex(task => task.id === obj.id);
     // 参照渡しはバグのもとなので、コピーして代入する
-    console.log(index);
-    const newList = [...this.elmList];
-    console.log(newList);
-    newList[index] = obj;
-    console.log(newList);
-    this.$emit("editTask", this.index, newList);
+    const newTasks = [...this.tasks];
+    newTasks[index] = obj;
+    const option: UpdateOption = {
+      index: this.index,
+      tasks: newTasks
+    };
+    this.$emit("updateTask", option);
+  }
+
+  updateMonster(): void {
+    if(!this.monster) return
+    const monster: I_Monster = {...this.monster}
+    monster.remaining -= 1
+    const option: UpdateOption = {
+      index: this.index,
+      monster: monster
+    };
+    this.$emit("updateTask", option);
   }
 
   finishTask(): void {
-    console.log("タスクが終わったよ");
+    this.updateMonster()
     this.finishCount++;
   }
 }
