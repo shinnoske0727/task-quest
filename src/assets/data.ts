@@ -24,6 +24,5 @@ export const INITIAL_DATA: I_UserData = {
       tasks: [{ id: 1, isFinished: false, name: "" }]
     }
   ],
-  repel: 0,
-  repelPerDate: 0
+  repel: 0
 };

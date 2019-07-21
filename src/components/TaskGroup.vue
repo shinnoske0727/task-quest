@@ -111,6 +111,7 @@ export default class TaskGroup extends Vue {
           querySnapshot.docs.map(elem => elem.data() as I_Monster)
         );
       monster = sample(monsters);
+      this.$emit("knockDownMonster");
     }
     const option: UpdateOption = {
       index: this.index,
