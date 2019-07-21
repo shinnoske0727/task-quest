@@ -13,6 +13,9 @@ export interface I_Task {
 export interface I_Monster {
   name: string;
   hitPoint: number;
+  id: number;
+  remaining: number;
+  nameId: string;
 }
 
 export interface I_Project {
@@ -26,3 +29,9 @@ export interface I_UserData {
   user: string;
   projects: I_Project[];
 }
+
+export type UpdateOption = {
+  index: number;
+  tasks?: I_Task[];
+  monster?: I_Monster;
+};
