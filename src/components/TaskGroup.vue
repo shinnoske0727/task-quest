@@ -10,13 +10,12 @@
                 | タスクを追加して
                 br
                 | 敵を倒そう
-        .monster
-            img(:src="pic")
+        monster(:pic="pic" :finish-count="finishCount")
         .kanban
             .title {{title}}
             draggable.list
                 template(v-for="element in elmList")
-                    task-item(:element="element" :key="element.id" @update="updateTaskList")
+                    task-item(:element="element" :key="element.id" @update="updateTaskList" @finishTask="finishTask")
             button.button(@click="addTask") + さらにカードを追加
 
 </template>
@@ -26,14 +25,17 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 import draggable from "vuedraggable";
 import { I_elmList } from "@/types";
 import TaskItem from "@/components/TaskItem.vue";
+import Monster from "@/components/Monster.vue";
 
 @Component({
   components: {
     draggable,
-    TaskItem
+    TaskItem,
+    Monster
   }
 })
 export default class TaskGroup extends Vue {
+  finishCount = 0;
   @Prop({
     default: ""
   })
@@ -86,6 +88,11 @@ export default class TaskGroup extends Vue {
     console.log(newList);
     this.$emit("editTask", this.index, newList);
   }
+
+  finishTask(): void {
+    console.log("タスクが終わったよ");
+    this.finishCount++;
+  }
 }
 </script>
 
@@ -110,14 +117,7 @@ export default class TaskGroup extends Vue {
     border: 2px solid white
     border-radius: 4px;
     white-space pre-wrap
-.monster
-    margin-bottom: 20px;
-    height: 300px;
-    text-align: center
-    > img
-        width: 100%
-        height: 100%
-        object-fit contain
+
 .button
     display: block
     height: 1.5em
