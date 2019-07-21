@@ -34,54 +34,63 @@ export default class Monster extends Vue {
   /* mounted */
   /////////////
   mounted(): void {
-    this.setupTimeline();
+    // this.setupTimeline();
   }
 
   /////////////
   /* methods */
   /////////////
   setupTimeline(): void {
-    if (!(this.$refs.monster && this.$refs.effect)) return;
-    this.timeline = new TimelineMax();
-    this.timeline
-      .set(this.$refs.effect, {
-        autoAlpha: 1.0
-      })
-      .set(
-        this.$refs.monster,
-        {
-          autoAlpha: 0
-        },
-        "+=0.1"
-      )
-      .set(
-        this.$refs.monster,
-        {
-          autoAlpha: 1
-        },
-        "+=0.1"
-      )
-      .set(
-        this.$refs.monster,
-        {
-          autoAlpha: 0
-        },
-        "+=0.1"
-      )
-      .set(
-        this.$refs.monster,
-        {
-          autoAlpha: 1
-        },
-        "+=0.1"
-      )
-      .set(this.$refs.effect, {
-        autoAlpha: 0
-      });
+    setTimeout(() => {
+      if (!(this.$refs.monster && this.$refs.effect)) return;
+      const timeline = new TimelineMax();
+      timeline
+        .set(this.$refs.effect, {
+          autoAlpha: 1.0
+        })
+        .set(
+          this.$refs.monster,
+          {
+            autoAlpha: 0
+          },
+          "+=0.1"
+        )
+        .set(
+          this.$refs.monster,
+          {
+            autoAlpha: 1
+          },
+          "+=0.1"
+        )
+        .set(
+          this.$refs.monster,
+          {
+            autoAlpha: 0
+          },
+          "+=0.1"
+        )
+        .set(
+          this.$refs.monster,
+          {
+            autoAlpha: 1
+          },
+          "+=0.1"
+        )
+        .set(
+          this.$refs.effect,
+          {
+            autoAlpha: 0
+          },
+          "+=0.1"
+        );
+
+      timeline.play();
+    }, 200);
   }
 
   playTimeline(): void {
-    if (this.timeline) this.timeline.restart();
+    // todo なぜかrestartがうまくいかないので
+    this.setupTimeline();
   }
   ///////////
   /* watch */
