@@ -3,7 +3,6 @@
         .wrapper
             template(v-for='(project, index) in projects')
                 task-group(
-                    :pic="monsterList[index]"
                     :index="index"
                     :project="project"
                     @addTask="updateProjects"
@@ -42,12 +41,6 @@ const db = firebase.firestore();
 })
 export default class Home extends Vue {
   userData: I_UserData | null = null;
-  monsterList = [
-    require("@/assets/img/monster_pic_1.png"),
-    require("@/assets/img/monster_pic_2.png"),
-    require("@/assets/img/monster_pic_3.png"),
-    require("@/assets/img/monster_pic_4.png")
-  ];
   elmList = [
     {
       id: 1,

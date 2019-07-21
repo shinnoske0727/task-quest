@@ -8,7 +8,7 @@
                 | 弱点 : {{topTask.name}}
             template(v-else)
                 | 弱点 : タスクを追加して敵を倒そう
-        monster(:pic="pic" :finish-count="finishCount")
+        monster(:pic="require(`@/assets/img/${monster.nameId}.png`)" :finish-count="finishCount")
         .kanban
             .title {{ project.title }}
             draggable.list
@@ -38,11 +38,6 @@ export default class TaskGroup extends Vue {
     default: null
   })
   readonly project!: I_Project | null;
-
-  @Prop({
-    default: ""
-  })
-  readonly pic!: string;
 
   @Prop({
     default: null
@@ -93,9 +88,9 @@ export default class TaskGroup extends Vue {
   }
 
   updateMonster(): void {
-    if(!this.monster) return
-    const monster: I_Monster = {...this.monster}
-    monster.remaining -= 1
+    if (!this.monster) return;
+    const monster: I_Monster = { ...this.monster };
+    monster.remaining -= 1;
     const option: UpdateOption = {
       index: this.index,
       monster: monster
@@ -104,7 +99,7 @@ export default class TaskGroup extends Vue {
   }
 
   finishTask(): void {
-    this.updateMonster()
+    this.updateMonster();
     this.finishCount++;
   }
 }

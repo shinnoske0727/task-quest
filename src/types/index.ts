@@ -15,6 +15,7 @@ export interface I_Monster {
   hitPoint: number;
   id: number;
   remaining: number;
+  nameId: string;
 }
 
 export interface I_Project {
