@@ -28,6 +28,8 @@ export interface I_Project {
 export interface I_UserData {
   user: string;
   projects: I_Project[];
+  repel: number;
+  repelPerDate: number;
 }
 
 export type UpdateOption = {
