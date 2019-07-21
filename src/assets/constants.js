@@ -6,5 +6,5 @@ module.exports = {
     DESCRIPTION: "irie-vue-cli development.",
     KEYWORDS: "vue-cli,vue.js",
     SHARE_IMAGE_PATH: "ogp.png"
-  }
+  },
 };

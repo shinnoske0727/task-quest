@@ -2,14 +2,13 @@
     .task-group
         p.goal
             template(v-if="topTask && topTask.name")
-                | {{topTask.name}}と
-                br
-                | しぬ
-                | {{monster}}
+                | 「{{topTask.name}}」
+                | と死ぬ{{monster.name}}
             template(v-else)
                 | タスクを追加して
                 br
                 | 敵を倒そう
+        p.hit-point {{ monster.hitPoint }}
         monster(:pic="pic" :finish-count="finishCount")
         .kanban
             .title {{title}}

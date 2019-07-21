@@ -2,7 +2,7 @@
     .home
         header.header
         .wrapper
-            template(v-for='(project, index) in mergedProjects')
+            template(v-for='(project, index) in projects')
                 task-group(
                     :title="project.title"
                     :pic="monsterList[index]"
@@ -19,8 +19,10 @@ import { Component, Vue } from "vue-property-decorator";
 import TaskGroup from "@/components/TaskGroup.vue";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-import { I_UserData, I_Project, I_Task } from "../types";
+import { I_UserData, I_Project, I_Task, I_Monster } from "../types";
 import { DocumentReference } from "@firebase/firestore-types";
+import { sortBy } from "lodash";
+import { INITIAL_DATA } from "@/assets/data";
 const firebaseConfig = {
   apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
   authDomain: "task-quest-31d58.firebaseapp.com",
@@ -33,39 +35,6 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-const hoge: I_UserData = {
-  user: "anonymous",
-  projects: [
-    {
-      id: 1,
-      name: "案件1",
-      tasks: [
-        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
-      ]
-    },
-    {
-      id: 2,
-      name: "案件2",
-      tasks: [
-        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
-      ]
-    },
-    {
-      id: 3,
-      name: "案件3",
-      tasks: [
-        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
-      ]
-    },
-    {
-      id: 4,
-      name: "案件4",
-      tasks: [
-        { id: 1, isFinished: false, name: "新しいタスクを追加してください" }
-      ]
-    }
-  ]
-};
 const db = firebase.firestore();
 
 @Component({
@@ -91,21 +60,6 @@ export default class Home extends Vue {
 
   get projects(): I_Project[] {
     return this.userData ? this.userData.projects : [];
-  }
-
-  get mergedProjects(): I_Project[] {
-    const monsters = ["ゾンビ", "ゴーレム", "ドラゴン", "ナイト"];
-
-    if (this.userData) {
-      const fixedProject = this.userData.projects.map((project, index) => {
-        const number = index % monsters.length;
-        project.monster = monsters[number];
-        return project;
-      });
-      return fixedProject;
-    } else {
-      return [];
-    }
   }
 
   updateTasks(index: number, tasks: I_Task[]): void {
@@ -142,11 +96,26 @@ export default class Home extends Vue {
         });
     } else {
       // 新しく生成
-      const ref = db.collection("users");
-      await ref
-        .add(hoge)
+
+      const monsterRef = db.collection("monsters");
+      const monsters = await monsterRef
+        .get()
+        .then(querySnapshot =>
+          querySnapshot.docs.map(elem => elem.data() as I_Monster)
+        );
+      const sortedMonsters = sortBy(monsters, ["id"]);
+      const initialData = { ...INITIAL_DATA };
+      initialData.projects = initialData.projects.map((project, index) => {
+        project.monster = sortedMonsters[index];
+        return project;
+      });
+      console.log(initialData);
+      const userRef = db.collection("users");
+      await userRef
+        .add(INITIAL_DATA)
         .then((docRef: DocumentReference) => {
           localStorage.setItem("taskQuestId", docRef.id);
+          this.userData = INITIAL_DATA;
         })
         .catch(e => {
           throw new Error(e);
