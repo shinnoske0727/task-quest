@@ -2,7 +2,7 @@
     footer.footer
         .result
             p.all これまでに倒した敵 :  {{ allRepel }} 体
-            p.daily 今日倒した敵 : {{ repelPerDate }} 体
+            p.daily 今日倒した敵 : {{ repelPerDay }} 体
             p.rank 今日の頑張り度 : {{ todayRank }}
         a.twitter-share-button(href='https://twitter.com/share?ref_src=twsrc%5Etfw', data-show-count='false') 冒険の記録をシェア
 
@@ -19,12 +19,12 @@ export default class TaskFooter extends Vue {
   @Prop({
     default: 0
   })
-  readonly repelPerDate!: number;
+  readonly repelPerDay!: number;
 
   get todayRank(): string {
-    if (!this.repelPerDate) return "さあ、はじめよう！";
+    if (!this.repelPerDay) return "さあ、はじめよう！";
     let word = "";
-    switch (this.repelPerDate) {
+    switch (this.repelPerDay) {
       case 0:
         word = "さあ、はじめよう！";
         break;

@@ -10,8 +10,9 @@
                     :db="db"
                     @addTask="updateProjects"
                     @updateTask="updateProjects"
+                    @knockDownMonster="addRepel"
                 )
-        task-footer(:all-repel="0" :repel-per-date="0")
+        task-footer(:all-repel="repel" :repel-per-day="repelPerDay")
 </template>
 
 <script lang="ts">
@@ -30,6 +31,8 @@ import { DocumentReference } from "@firebase/firestore-types";
 import { sortBy } from "lodash";
 import { INITIAL_DATA } from "@/assets/data";
 import TaskFooter from "@/components/TaskFooter.vue";
+import * as cookie from "@/assets/utils/cookie";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBZKvokIkAHSe_DyyFCzBjOJPo-zhrIcT4",
   authDomain: "task-quest-31d58.firebaseapp.com",
@@ -52,13 +55,8 @@ const db = firebase.firestore();
 })
 export default class Home extends Vue {
   userData: I_UserData | null = null;
-  elmList = [
-    {
-      id: 1,
-      name: "メールをおくる",
-      isFinished: false
-    }
-  ];
+  repel = this.userData ? this.userData.repel : 0;
+  repelPerDay = cookie.getRepelPerDay() || 0;
 
   get projects(): I_Project[] {
     return this.userData ? this.userData.projects : [];
@@ -92,7 +90,8 @@ export default class Home extends Vue {
     const ref = db.collection("users").doc(id);
     ref
       .update({
-        projects: this.projects
+        projects: this.projects,
+        repel: this.repel
       })
       .then(() => {
         console.log("success");
@@ -113,6 +112,7 @@ export default class Home extends Vue {
         .then(docSnapshot => {
           if (docSnapshot) {
             this.userData = docSnapshot.data() as I_UserData;
+            this.repel = this.userData.repel;
           } else {
             throw new Error("Don't exist data");
           }
@@ -143,6 +143,12 @@ export default class Home extends Vue {
           throw new Error(e);
         });
     }
+  }
+
+  addRepel(): void {
+    this.repel++;
+    this.repelPerDay++;
+    cookie.setRepelPerDay(this.repelPerDay);
   }
 
   created() {
